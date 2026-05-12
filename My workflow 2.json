@@ -1,0 +1,511 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        -96
+      ],
+      "id": "969ebcb1-0899-4e40-a0dd-5b1267e47126",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "jY7UhPb36atonuNe",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "5aade674-efa2-456e-bac0-974a1844167d",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -704,
+        -320
+      ],
+      "id": "f8d27ae8-be1d-4137-9d2c-568ace2c14c0",
+      "name": "Webhook",
+      "webhookId": "5aade674-efa2-456e-bac0-974a1844167d"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "eb8ba70e-c3f3-4cbf-9ea0-161aed405df4",
+              "leftValue": "={{ $json.body.typeWebhook }}",
+              "rightValue": "incomingMessageReceived",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -784,
+        -64
+      ],
+      "id": "e6d4cca2-7f0b-4b08-9f6b-9fb25f7f3151",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ab6da3f9-074c-4b39-bce2-c407aa007977",
+              "leftValue": "{{ $json.text }}",
+              "rightValue": "SKIP",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        400,
+        -208
+      ],
+      "id": "45043878-22d0-4b9f-b1ee-34edc79b4256",
+      "name": "message type"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://7107.api.greenapi.com/waInstance7107612308/sendMessage/2e0504826f1b480f88f4ac8331ac774d4f4bb99010c24c7784",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chatId\": \"{{ $json.body.senderData.chatId }}\",\n  \"message\": \"👋 Hello! I am an AI Assistant.\\n\\nI can help you with:\\n✅ Payment confirmations\\n🔔 Priority messages\\n🚫 Spam filtering\\n💬 General queries\\n\\n⚠️ Disclaimer: This number uses AI. Your messages are processed automatically.\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        624,
+        -224
+      ],
+      "id": "3ba97c00-9d4f-4ce1-8703-ef419819dbb9",
+      "name": "send ai reply"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1sH1gFFsd6fsNYocDQr2rKkUL6F5oqjHq4k3khx2PUpU",
+          "mode": "list",
+          "cachedResultName": "Untitled spreadsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sH1gFFsd6fsNYocDQr2rKkUL6F5oqjHq4k3khx2PUpU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sH1gFFsd6fsNYocDQr2rKkUL6F5oqjHq4k3khx2PUpU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "timestamp": "={{ $now }}",
+            "phone number": "={{ $('Webhook').item.json.body.senderData.chatId }}",
+            "message": "={{ $('Webhook').item.json.body.messageData.textMessageData.textMessage }}",
+            "AI response": "={{ $json.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone number",
+              "displayName": "phone number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AI response",
+              "displayName": "AI response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        176,
+        -272
+      ],
+      "id": "f9121701-bbbe-4c2f-a5a3-48e6eacca573",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hKWsKWL2OK9hpHid",
+          "name": "Google Sheets OAuth2 API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://7107.api.greenapi.com/waInstance7107612308/sendMessage/2e0504826f1b480f88f4ac8331ac774d4f4bb99010c24c7784",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chatId\": \"{{ $('Webhook').item.json.body.senderData.chatId }}\",\n  \"message\": \"⚠️ Sorry, I cannot process your message right now. Please try again in a few minutes.\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        128,
+        -16
+      ],
+      "id": "ef882ce4-b11c-4773-b21f-24a5002060d1",
+      "name": "send error reply"
+    },
+    {
+      "parameters": {
+        "jsCode": "const chatId = $input.item.json.body.senderData.chatId;\nconst now = Date.now();\nconst windowMs = 60000; // 1 minute\nconst maxRequests = 3; // max 3 messages per minute\n\n// Get stored data\nconst key = `rateLimit_${chatId}`;\nconst stored = $getWorkflowStaticData('node');\n\nif (!stored[key]) {\n  stored[key] = { count: 1, startTime: now };\n  return $input.item;\n}\n\nconst elapsed = now - stored[key].startTime;\n\nif (elapsed > windowMs) {\n  // Reset window\n  stored[key] = { count: 1, startTime: now };\n  return $input.item;\n}\n\nif (stored[key].count >= maxRequests) {\n  // Rate limit exceeded\n  throw new Error('RATE_LIMITED');\n}\n\nstored[key].count++;\nreturn $input.item;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -528,
+        -80
+      ],
+      "id": "36408a2b-cd6c-41a0-9f41-68db581ac574",
+      "name": "rate limiter"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://7107.api.greenapi.com/waInstance7107612308/sendMessage/2e0504826f1b480f88f4ac8331ac774d4f4bb99010c24c7784",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chatId\": \"{{ $('Webhook').item.json.body.senderData.chatId }}\",\n  \"message\": \"⚠️ Too many messages! Please wait 1 minute before sending again.\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -240,
+        64
+      ],
+      "id": "a788a11e-f8c0-4e81-807f-d9f8591bf578",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a WhatsApp AI Secretary.\n\nFIRST CHECK: If the message contains \"✅\" or \"🔔\" or \"IGNORE\" or starts with \"Payment received\" — respond with exactly: SKIP\n\nIf message is greeting (Hi, Hello, Hey, Hlo, Hii, Start):\nReply with:\n\"👋 Welcome! I am your AI Assistant.\n\nI can help you with:\n✅ Confirm payments\n🔔 Flag important messages\n🚫 Filter spam\n💬 Answer queries\n🕐 Business hours: 9AM-6PM Mon-Fri\n\nType your message and I'll handle it!\n⚠️ This number uses AI automation.\"\n\nOtherwise classify:\n1. PAYMENT → \"✅ Payment of [amount] received! Recorded successfully.\"\n2. SPAM → \"IGNORE\"\n3. IMPORTANT → \"🔔 PRIORITY: [one line summary]\"\n4. QUESTION → Answer briefly and helpfully\n5. NORMAL → Friendly brief response\n\nBUSINESS HOURS: 9AM-6PM IST Monday-Friday\nOutside hours reply: \"🕐 We are closed right now. Business hours: 9AM-6PM Mon-Fri. Your message is recorded ✅\"\n\nLANGUAGE RULES:\n- Always detect the language of incoming message\n- Reply in EXACTLY the same language\n- If message is in Hindi → reply in Hindi\n- If message is in Hinglish → reply in Hinglish\n- If message is in English → reply in English\n- Never switch languages unless user switches first\n\nHindi example:\nPayment message → \"✅ आपका ₹[amount] का भुगतान प्राप्त हो गया!\"\nGreeting → \"👋 नमस्ते! मैं आपका AI सहायक हूं।\"\nSpam → \"IGNORE\"\nImportant → \"🔔 प्राथमिकता: [summary]\"\n\nKeep replies under 3 lines.\nReply in same language as message.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -256,
+        -272
+      ],
+      "id": "f2f988ba-8f0e-4e44-bc62-685400e1dbe6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.senderData.chatId }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -32,
+        144
+      ],
+      "id": "a6009aa3-84c2-4466-ba5b-532ddceae688",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d644c50c-9bba-4392-9976-e213f3d1a639",
+              "leftValue": "={{ new Date().getHours() }}",
+              "rightValue": 9,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "ebaa78e4-2ac4-4f5c-a0ae-4dcf627562a5",
+              "leftValue": "={{ new Date().getHours() }}",
+              "rightValue": 18,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -480,
+        192
+      ],
+      "id": "51c7e6fc-1438-4bc9-892e-f0838bbeef24",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://7107.api.greenapi.com/waInstance7107612308/sendMessage/2e0504826f1b480f88f4ac8331ac774d4f4bb99010c24c7784",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chatId\": \"{{ $('Webhook').item.json.body.senderData.chatId }}\",\n  \"message\": \"🕐 We are currently closed.\\nBusiness hours: 9AM-6PM Mon-Fri\\nYour message is recorded ✅\\nWe will respond soon!\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -240,
+        256
+      ],
+      "id": "0e7650a0-65f3-461e-be59-c7d46bdaabe6",
+      "name": "HTTP Request1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "rate limiter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "message type": {
+      "main": [
+        [
+          {
+            "node": "send ai reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send ai reply": {
+      "main": [
+        []
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "message type",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "rate limiter": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        []
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "send error reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "06d25174-3cd0-4721-a5e5-58b75d13d7ec",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e9d6c9d73b5af853f0cfd45234b68046f624c51ed9e4e58d52f70b530ab957ed"
+  },
+  "id": "ez5yxTrfoy3Sf8Sz",
+  "tags": []
+}
